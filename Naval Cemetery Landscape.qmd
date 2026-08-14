@@ -1,5 +1,6 @@
 ---
-title: "Survey Site: Roosevelt Island"
+title: "Greenway Botanical Garden at the Naval Cemetery Landscape 
+- Williamsburg, BK"
 
 author: 
   - name: "Nic Comparato"
@@ -13,6 +14,8 @@ execute:
   warning: false
   message: false
 ---
+
+The graph below displays bat activity recorded at the Botanical Garden at Naval Cemetery Landscape in Williamsburg, Brooklyn. This is our second year working with the Brooklyn Greenway Initiative at this site, with this year's surveys beginning on May 29, 2026. This data was **last updated July 11, 2026**. The graph displays the survey nights in chronological order from left to right (x-axis) and and the number of bats detected each night are represented by the vertical peaks and valleys (y-axis).
 
 ```{r}
 #| column: screen
@@ -37,11 +40,11 @@ read_bat_folder<- function(folder, pattern="\\.txt$", reader= read.delim){
   data
 }
 
-SUGi<- read_bat_folder ("C:/Users/ncomp/Desktop/Bat Data/Summer of Vibes/Manhattan Healing")
+BGNCL<- read_bat_folder ("C:/Users/ncomp/Desktop/Bat Data/Summer of Vibes/Botanic Garden Naval Cemetery")
 
 #Count AutoID species occurences by night - May need to adjut species filter if all species were not recorded
 AutoIdResults<- function(data){data<-data %>% mutate(MonitoringNight = as.Date(MonitoringNight))
-Auto<- data %>% filter(SppAccp %in% c("Labo", "Lano", "Laci")) %>% 
+Auto<- data %>% filter(SppAccp %in% c("Epfu", "Labo", "Lano", "Laci")) %>% 
   count(SppAccp, MonitoringNight)%>% complete(MonitoringNight = seq(min(MonitoringNight), max(MonitoringNight), by= "day"), fill = list(n=0)) %>% 
   pivot_wider(names_from = SppAccp, values_from = n, values_fill = 0)}
 
@@ -56,20 +59,20 @@ count_nightly <- function(deployment_list, location_name) {
   })
   
   bind_rows(counts) %>%
-    arrange(Location, Labo, Lano, Laci, SourceFile)
+    arrange(Location, Epfu, Labo, Lano, Laci, SourceFile)
 }
 
 #Must supply location name after list in function
-SUGi_Count<- count_nightly(SUGi, "Manhattan Healing")
+BGNCL_Count<- count_nightly(BGNCL, "BGNCL")
 
 
 #Create Additive Line Chart, more detailed but ugly
-pal=c(Lano= "#59344F",Labo="#8BBF9F",Laci="#F5E0B7")
-Species_labels=c(Labo= "Eastern Red Bat", Laci= "Hoary Bat", Lano= "Silver-haired Bat")
+pal=c(Epfu= "#3F0D12" , Lano= "#F1F0CC",Labo="#A71D31",Laci="#D5BF86")
+Species_labels=c(Labo= "Eastern Red Bat", Laci= "Hoary Bat", Lano= "Silver-haired Bat", Epfu="Big Brown Bat")
 caption_text  <- ("Data: Urban Bat Project NYC/Nic Comparato, 2026")
 Additive_Line_Chart<- function(data, title){
-  plot<- data %>% pivot_longer(cols = c(Labo, Lano, Laci), names_to = "Species", values_to = "Activity") %>%
-    mutate(Species=factor(Species, levels = c("Lano","Laci", "Labo")))%>%
+  plot<- data %>% pivot_longer(cols = c(Epfu, Labo, Lano, Laci), names_to = "Species", values_to = "Activity") %>%
+    mutate(Species=factor(Species, levels = c("Epfu","Lano","Labo", "Laci")))%>%
     ggplot(aes(x=MonitoringNight, y=Activity, fill=Species, color= Species))+
     geom_area(alpha=.85, linewidth = .2)+scale_fill_manual(values=pal, labels = Species_labels) + 
     scale_color_manual(values=pal, labels = Species_labels) +
@@ -81,15 +84,33 @@ Additive_Line_Chart<- function(data, title){
   return(plot)
 }
 
-Additive_Line_Chart(SUGi_Count, "Bat Activity at Manhattan Healing Forest, Roosevelt Island")
+Additive_Line_Chart(BGNCL_Count, "Bat Activity at Naval Cemetery Landscape")
 
 
 ```
 
-### About Eastern Red Bats
+### Big Brown Bats and Eastern Red Bats: Two Very Different Approaches to NYC
 
-The eastern red bat (*Lasiurus borealis*) is the most common bat in New York City and the species most frequently recorded on Roosevelt Island. This migratory bat is a fast flyer that's well-adapted to open spaces. These traits, along with a high tolerance for light and noise pollution, make red bats more at home in urban environments than other bat species. Like birds, these bats migrate into the city each spring from their wintering grounds and migrate out in the mid-to-late fall.
+The two most commonly detected species at the Naval Cemetery Landscape are the **eastern red bat** (*Lasiurus borealis*) and **big brown bat** (*Eptesicus fuscus*). You can see by the alternating colors above that they regularly fluctuate in terms of who is more common.
 
-### About iDig2Learn and the Manhattan Healing Forest, our community partners on Roosevelt Island
+Eastern red bats are nomadic, migratory bats that spend the summer in NYC. They typically move to a new location every 1-2 days and are extremely flexible in their habitat requirements. Big brown bats, on the other hand, are very particular about finding the best quality habitat available. Once they've found a spot they like, they'll make it their home until its time for them to hibernate in the winter.
 
-Our community partner and liaison with the Roosevelt Island Operating Corporation is Christina Delfico, the main organizing force behind the Manhattan Healing Forest and the community nature initiative, [iDig2Learn](https://www.idig2learn.org/). The Manhattan Healing Forest is New York State's first Miyawaki Method Pocket Forest. Roughly the size of a tennis court, it contains tight knit plantings of 1,500 native trees and shrubs in Southpoint Park. Forest funding partners [SUGi](https://www.sugiproject.com/forests/manhattan-healing-forest) and leaders from the [Lenape Center](https://lenape.center/) and Yakama Nation helped plant forty-seven native plant species in April 202. In addition to bats, this small forest corner of Roosevelt Island is also home to kestrels, hawks, falcons, Monarch butterflies and native bees.
+::::: {style="display: flex; gap: 20px;"}
+::: {style="flex: 1; margin: 0;"}
+![](LABO.jpg){width="100%"}
+
+*Eastern Red Bat*
+:::
+
+::: {style="flex: 1; margin: 0;"}
+![](EPFU.png){width="100%"}
+
+*Big Brown Bat*
+:::
+:::::
+
+### About the Brooklyn Greenway Initiative and the Botanical Garden at Naval Cemetery Landscape
+
+Brooklyn Greenway Initiative is the team behind the restoration of Naval Cemetery Landscape. We began working with them in 2025 and they have been incredible partners in research. In 2026, we began offering bat walks at this location. From their website:
+
+Brooklyn Greenway Initiative built the Naval Cemetery Landscape (now called the Greenway Botanical Garden at the Naval Cemetery) in 2016 on the site of the former Naval Hospital Cemetery at the Brooklyn Navy Yard as a place for retreat and remembrance while honoring its rich layers of natural and cultural history. This site was designed as a native plant meadow and pollinator habitat, and provides visitors with an escape from urban life. Many rare birds and insects can be seen here. There are magnifying glasses on site and visitors are encouraged to bring their own binoculars to observe the bird species from the boardwalk
