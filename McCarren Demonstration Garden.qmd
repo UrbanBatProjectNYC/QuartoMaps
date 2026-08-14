@@ -1,0 +1,118 @@
+---
+title: "McCarren Demonstration Garden at McCarren Park 
+- Williamsburg, BK"
+
+author: 
+  - name: "Nic Comparato"
+    role: "Ecologist"
+    
+format: html
+editor: visual 
+
+execute: 
+  echo: false 
+  warning: false
+  message: false
+---
+
+The graph below displays bat activity recorded at the McCarren Demonstration Garden in Williamsburg, Brooklyn. This garden was the site of a bat rescue earlier this summer and we began monitoring on June 6, 2026. This data was **last updated August 4, 2026**. The graph displays the survey nights in chronological order from left to right (x-axis) and and the number of bats detected each night are represented by the vertical peaks and valleys (y-axis).
+
+```{r}
+#| column: screen
+#| fig-width: 14
+#| fig-height: 6
+#| out-width: "100%"
+
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(tidyverse)
+library(janitor)
+library(readxl)
+library(ggstream)
+library(showtext)
+library(ggtext)
+#Bring Bat Data into R by folder
+read_bat_folder<- function(folder, pattern="\\.txt$", reader= read.delim){
+  files<-list.files(path = folder, pattern = pattern, full.names = TRUE)
+  data<- lapply(files,reader)
+  names(data)<- tools::file_path_sans_ext(basename(files))
+  data
+}
+
+MDG<- read_bat_folder ("C:/Users/ncomp/Desktop/Bat Data/Summer of Vibes/McCarren")
+
+#Count AutoID species occurences by night - May need to adjut species filter if all species were not recorded
+AutoIdResults<- function(data){data<-data %>% mutate(MonitoringNight = as.Date(MonitoringNight))
+Auto<- data %>% filter(SppAccp %in% c("Epfu", "Labo")) %>% 
+  count(SppAccp, MonitoringNight)%>% complete(MonitoringNight = seq(min(MonitoringNight), max(MonitoringNight), by= "day"), fill = list(n=0)) %>% 
+  pivot_wider(names_from = SppAccp, values_from = n, values_fill = 0)}
+
+count_nightly <- function(deployment_list, location_name) {
+  counts <- lapply(deployment_list, AutoIdResults)
+  
+  counts <- lapply(names(counts), function(file_name) {
+    df <- counts[[file_name]]
+    df$Location <- location_name
+    df$SourceFile <- file_name
+    df
+  })
+  
+  bind_rows(counts) %>%
+    arrange(Location, Epfu, Labo, SourceFile)
+}
+
+#Must supply location name after list in function
+MDG_Count<- count_nightly(MDG, "MDG")
+
+
+#Create Additive Line Chart, more detailed but ugly
+pal=c(Epfu= "#3F0D12" , Labo="#A71D31")
+Species_labels=c(Labo= "Eastern Red Bat", Epfu="Big Brown Bat")
+caption_text  <- ("Data: Urban Bat Project NYC/Nic Comparato, 2026")
+Additive_Line_Chart<- function(data, title){
+  plot<- data %>% pivot_longer(cols = c(Epfu, Labo), names_to = "Species", values_to = "Activity") %>%
+    mutate(Species=factor(Species, levels = c("Epfu","Labo")))%>%
+    ggplot(aes(x=MonitoringNight, y=Activity, fill=Species, color= Species))+
+    geom_area(alpha=.85, linewidth = .2)+scale_fill_manual(values=pal, labels = Species_labels) + 
+    scale_color_manual(values=pal, labels = Species_labels) +
+    labs(title=title, x= "Night", y= "Bat Detections", fill= "Species", color= "Species", caption = caption_text)+
+    scale_x_date(date_breaks = "3 days", date_labels = "%b %d") + 
+    scale_y_continuous(breaks = scales::pretty_breaks(n=8)) +
+    theme_minimal(base_size = 16)+theme(panel.background = element_rect(fill="transparent", color=NA), 
+                          plot.background = element_rect(fill="transparent", color=NA))
+  return(plot)
+}
+
+Additive_Line_Chart(MDG_Count, "Bat Activity at McCarren Park")
+
+
+```
+
+### Eastern Red Bats: A flexible species 
+
+The two most commonly detected species at the McCarren Demonstration Garden are the **eastern red bat** (*Lasiurus borealis*) and **big brown bat** (*Eptesicus fuscus*). You can see by the alternating colors above that they regularly fluctuate in terms of who is more common.
+
+Red bats are very nomadic, moving their home every one to two days, and flexible in the type of habitat they are willing to use. In the challenging landscape of New York City, this can be a strength. McCarren Park is a great example of this. Though it is far from fresh water and larger, forested parks, red bats are still able to find and take refuge in McCarren Park's limited habitat. Keep an eye on the baseball lights nearby during the summer and you may even see the occasional red bat feeding off the bugs they attract.
+
+::::: {style="display: flex; gap: 20px;"}
+::: {style="flex: 1; margin: 0;"}
+![](LABO.jpg){width="100%"}
+
+*Eastern Red Bat*
+:::
+
+::: {style="flex: 1; margin: 0;"}
+![](EPFU.png){width="100%"}
+
+*Big Brown Bat*
+:::
+:::::
+
+### About McCarren Park Demonstration Garden 
+
+We first began working with McCarren Park Demonstration Garden when they invited our principal ecologist, Nic, to give a talk about urban bats in 2025. After a pregnant red bat was discovered hiding in their planting beds earlier this summer, we set up a monitoring station in the garden. From their website:
+
+The McCarren Park Demonstration Garden is an initiative of North Brooklyn Mutual Aid and GrowNYC. We're a space for environmental education and climate justice, and we're so happy you're here.
+
+There are no individual plots in our garden—we grow everything together. We focus on food and flowers to stock our local free fridges. In 2024, we harvested 935 lbs of produce for our neighbors! We also provide free workshops and events for the community, and a chance to make new friends while getting your hands a little dirty.
