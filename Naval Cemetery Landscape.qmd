@@ -1,0 +1,95 @@
+---
+title: "Survey Site: Roosevelt Island"
+
+author: 
+  - name: "Nic Comparato"
+    role: "Ecologist"
+    
+format: html
+editor: visual 
+
+execute: 
+  echo: false 
+  warning: false
+  message: false
+---
+
+```{r}
+#| column: screen
+#| fig-width: 14
+#| fig-height: 6
+#| out-width: "100%"
+
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(tidyverse)
+library(janitor)
+library(readxl)
+library(ggstream)
+library(showtext)
+library(ggtext)
+#Bring Bat Data into R by folder
+read_bat_folder<- function(folder, pattern="\\.txt$", reader= read.delim){
+  files<-list.files(path = folder, pattern = pattern, full.names = TRUE)
+  data<- lapply(files,reader)
+  names(data)<- tools::file_path_sans_ext(basename(files))
+  data
+}
+
+SUGi<- read_bat_folder ("C:/Users/ncomp/Desktop/Bat Data/Summer of Vibes/Manhattan Healing")
+
+#Count AutoID species occurences by night - May need to adjut species filter if all species were not recorded
+AutoIdResults<- function(data){data<-data %>% mutate(MonitoringNight = as.Date(MonitoringNight))
+Auto<- data %>% filter(SppAccp %in% c("Labo", "Lano", "Laci")) %>% 
+  count(SppAccp, MonitoringNight)%>% complete(MonitoringNight = seq(min(MonitoringNight), max(MonitoringNight), by= "day"), fill = list(n=0)) %>% 
+  pivot_wider(names_from = SppAccp, values_from = n, values_fill = 0)}
+
+count_nightly <- function(deployment_list, location_name) {
+  counts <- lapply(deployment_list, AutoIdResults)
+  
+  counts <- lapply(names(counts), function(file_name) {
+    df <- counts[[file_name]]
+    df$Location <- location_name
+    df$SourceFile <- file_name
+    df
+  })
+  
+  bind_rows(counts) %>%
+    arrange(Location, Labo, Lano, Laci, SourceFile)
+}
+
+#Must supply location name after list in function
+SUGi_Count<- count_nightly(SUGi, "Manhattan Healing")
+
+
+#Create Additive Line Chart, more detailed but ugly
+pal=c(Lano= "#59344F",Labo="#8BBF9F",Laci="#F5E0B7")
+Species_labels=c(Labo= "Eastern Red Bat", Laci= "Hoary Bat", Lano= "Silver-haired Bat")
+caption_text  <- ("Data: Urban Bat Project NYC/Nic Comparato, 2026")
+Additive_Line_Chart<- function(data, title){
+  plot<- data %>% pivot_longer(cols = c(Labo, Lano, Laci), names_to = "Species", values_to = "Activity") %>%
+    mutate(Species=factor(Species, levels = c("Lano","Laci", "Labo")))%>%
+    ggplot(aes(x=MonitoringNight, y=Activity, fill=Species, color= Species))+
+    geom_area(alpha=.85, linewidth = .2)+scale_fill_manual(values=pal, labels = Species_labels) + 
+    scale_color_manual(values=pal, labels = Species_labels) +
+    labs(title=title, x= "Night", y= "Bat Detections", fill= "Species", color= "Species", caption = caption_text)+
+    scale_x_date(date_breaks = "3 days", date_labels = "%b %d") + 
+    scale_y_continuous(breaks = scales::pretty_breaks(n=8)) +
+    theme_minimal(base_size = 16)+theme(panel.background = element_rect(fill="transparent", color=NA), 
+                          plot.background = element_rect(fill="transparent", color=NA))
+  return(plot)
+}
+
+Additive_Line_Chart(SUGi_Count, "Bat Activity at Manhattan Healing Forest, Roosevelt Island")
+
+
+```
+
+### About Eastern Red Bats
+
+The eastern red bat (*Lasiurus borealis*) is the most common bat in New York City and the species most frequently recorded on Roosevelt Island. This migratory bat is a fast flyer that's well-adapted to open spaces. These traits, along with a high tolerance for light and noise pollution, make red bats more at home in urban environments than other bat species. Like birds, these bats migrate into the city each spring from their wintering grounds and migrate out in the mid-to-late fall.
+
+### About iDig2Learn and the Manhattan Healing Forest, our community partners on Roosevelt Island
+
+Our community partner and liaison with the Roosevelt Island Operating Corporation is Christina Delfico, the main organizing force behind the Manhattan Healing Forest and the community nature initiative, [iDig2Learn](https://www.idig2learn.org/). The Manhattan Healing Forest is New York State's first Miyawaki Method Pocket Forest. Roughly the size of a tennis court, it contains tight knit plantings of 1,500 native trees and shrubs in Southpoint Park. Forest funding partners [SUGi](https://www.sugiproject.com/forests/manhattan-healing-forest) and leaders from the [Lenape Center](https://lenape.center/) and Yakama Nation helped plant forty-seven native plant species in April 202. In addition to bats, this small forest corner of Roosevelt Island is also home to kestrels, hawks, falcons, Monarch butterflies and native bees.
