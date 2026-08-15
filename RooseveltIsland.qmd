@@ -66,7 +66,7 @@ SUGi_Count<- count_nightly(SUGi, "Manhattan Healing")
 
 
 #Create Additive Line Chart, more detailed but ugly
-pal=c(Labo="#8BBF9F",Laci="#F5E0B7")
+pal=c(Labo="#A71D31",Laci="#D5BF86")
 Species_labels=c(Labo= "Eastern Red Bat", Laci= "Hoary Bat")
 caption_text  <- ("Data: Urban Bat Project NYC/Nic Comparato, 2026")
 Additive_Line_Chart<- function(data, title){
@@ -110,4 +110,20 @@ Though both of these species live in New York City throughout the summer, they a
 
 ### About iDig2Learn and the Manhattan Healing Forest, our community partners on Roosevelt Island
 
-Our community partner and liaison with the Roosevelt Island Operating Corporation is Christina Delfico, the main organizing force behind the Manhattan Healing Forest and the community nature initiative, [iDig2Learn](https://www.idig2learn.org/). The Manhattan Healing Forest is New York State's first Miyawaki Method Pocket Forest. Roughly the size of a tennis court, it contains tight knit plantings of 1,500 native trees and shrubs in Southpoint Park. Forest funding partners [SUGi](https://www.sugiproject.com/forests/manhattan-healing-forest) and leaders from the [Lenape Center](https://lenape.center/) and Yakama Nation helped plant forty-seven native plant species in April 202. In addition to bats, this small forest corner of Roosevelt Island is also home to kestrels, hawks, falcons, Monarch butterflies and native bees.
+Our community partner and liaison is Christina Delfico, the local organizing force behind the Manhattan Healing Forest and the founder of the nature-centric organization, [iDig2Learn](https://www.idig2learn.org/). The Manhattan Healing Forest is New York State’s first Miyawaki Method Pocket Forest. Roughly the size of a tennis court, it contains tight knit plantings of 1,500 native trees and shrubs in Southpoint Park. The pocket forest’s [funding partners SUGi](https://www.sugiproject.com/forests/manhattan-healing-forest), along with leaders from NYS’s [Roosevelt Island Operating Corporation](https://www.rioc.ny.gov/) (RIOC), the [Lenape Center](https://lenape.center/) and the [Yakama Nation](https://yakama.com/) contributed to the community planting of forty-seven native plant species in April 2024. In addition to bats, this small forest corner on Roosevelt Island is also home to kestrels, hawks, falcons, endangered Monarch butterflies and native bees.
+
+“Creating this pocket forest is an invitation to understand how rebuilding soil health positively affects the health of all surrounding life. Using this tight-knit planting Miyawaki Method to strengthen root connections which in turn boosts tree growth exponentially mirrors how diverse communities can come close together now and do this. After all, New Yorkers understand crowded small spaces and if we can plant it here it can plant it anywhere.” -Christina Delfico, founder iDig2Learn
+
+::::: {style="display: flex; gap: 20px;"}
+::: {style="flex: 1; margin: 0;"}
+![](SUGi1.avif){width="100%"}
+
+*The Manhattan Healing Forest During Planting*
+:::
+
+::: {style="flex: 1; margin: 0;"}
+![](SUGi2.avif){width="100%"}
+
+*2 Years After Planting, photos by Dino Kuznik, courtesy of SUGi*
+:::
+:::::
