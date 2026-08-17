@@ -15,7 +15,7 @@ execute:
   message: false
 ---
 
-The graph below displays bat activity recorded at the Botanical Garden at Naval Cemetery Landscape in Williamsburg, Brooklyn. This is our second year working with the Brooklyn Greenway Initiative at this site, with this year's surveys beginning on May 29, 2026. This data was **last updated July 11, 2026**. The graph displays the survey nights in chronological order from left to right (x-axis) and and the number of bats detected each night are represented by the vertical peaks and valleys (y-axis).
+The graph below displays bat activity recorded at the Botanical Garden at Naval Cemetery Landscape in Williamsburg, Brooklyn. This is our second year working with the Brooklyn Greenway Initiative at this site, with this year's surveys beginning on May 29, 2026. This data was **last updated August 15, 2026**. The graph displays the survey nights in chronological order from left to right (x-axis) and and the number of bats detected each night are represented by the vertical peaks and valleys (y-axis).
 
 ```{r}
 #| column: screen
@@ -77,7 +77,7 @@ Additive_Line_Chart<- function(data, title){
     geom_area(alpha=.85, linewidth = .2)+scale_fill_manual(values=pal, labels = Species_labels) + 
     scale_color_manual(values=pal, labels = Species_labels) +
     labs(title=title, x= "Night", y= "Bat Detections", fill= "Species", color= "Species", caption = caption_text)+
-    scale_x_date(date_breaks = "3 days", date_labels = "%b %d") + 
+    scale_x_date(date_breaks = "7 days", date_labels = "%b %d") + 
     scale_y_continuous(breaks = scales::pretty_breaks(n=8)) +
     theme_minimal(base_size = 16)+theme(panel.background = element_rect(fill="transparent", color=NA), 
                           plot.background = element_rect(fill="transparent", color=NA))
